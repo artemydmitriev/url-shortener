@@ -11,6 +11,10 @@ export class ShortUrlsHandler {
   constructor(private readonly shortUrlsUseCase: ShortUrlsUseCase) {}
 
   listHandler: RouteHandler = async (request) => {
+    if (!request.user) {
+      throw new UnauthorizedError()
+    }
+
     return this.shortUrlsUseCase.listShortUrls(request.user)
   }
 
@@ -21,11 +25,9 @@ export class ShortUrlsHandler {
 
     const parsedPayload = CreateShortUrlPayloadSchema.safeParse(request.body)
     if (!parsedPayload.success) {
-      throw new ValidationError('Invalig URL')
+      throw new ValidationError('Invalid URL')
     }
 
     return this.shortUrlsUseCase.createShortUrl(request.user, parsedPayload.data.url)
   }
-
-  updateHandler: RouteHandler = async () => {}
 }

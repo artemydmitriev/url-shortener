@@ -9,7 +9,6 @@ export class ShortUrlsRoute {
   register: FastifyPluginCallback = (fastify, _, done) => {
     fastify.get('/', this.shortUrlsHandler.listHandler)
     fastify.post('/', this.shortUrlsHandler.createHandler)
-    fastify.put('/:id', this.shortUrlsHandler.updateHandler)
     done()
   }
 }

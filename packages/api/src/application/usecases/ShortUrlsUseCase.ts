@@ -75,11 +75,15 @@ export class ShortUrlsUseCase {
     return this.shortUrlsRepository.update(payload)
   }
 
+  public async updateSlugVisitsCounter(slugId: number): Promise<ShortUrl> {
+    return this.shortUrlsRepository.updateVisitsCounter(slugId)
+  }
+
   public async listShortUrlsByUser(user: User): Promise<ShortUrl[]> {
     return this.shortUrlsRepository.findAllByUserId(user.id)
   }
 
-  public async listShortUrls(user: User | null): Promise<ShortUrl[]> {
-    return user ? this.listShortUrlsByUser(user) : this.shortUrlsRepository.findAll()
+  public async listShortUrls(user: User): Promise<ShortUrl[]> {
+    return this.listShortUrlsByUser(user)
   }
 }

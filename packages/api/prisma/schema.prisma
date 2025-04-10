@@ -20,6 +20,7 @@ model ShortUrl {
   url       String
   slug      String
   createdAt DateTime @default(now())
+  visits    Int      @default(0)
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
 

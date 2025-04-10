@@ -30,13 +30,6 @@ export default function Footer() {
         <Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
         My URLs
       </button>
-
-      <button
-        onClick={navigate('/rankings')}
-        className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-      >
-        Rankings
-      </button>
     </footer>
   )
 }

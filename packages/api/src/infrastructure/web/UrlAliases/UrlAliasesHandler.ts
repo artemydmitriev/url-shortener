@@ -13,6 +13,7 @@ export class UrlAliasesHandler {
       throw new NotFoundError(`Slug not found`)
     }
 
+    await this.shortUrlsUseCase.updateSlugVisitsCounter(url.id!)
     return reply.redirect(url?.url)
   }
 }

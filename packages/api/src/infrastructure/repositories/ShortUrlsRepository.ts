@@ -16,12 +16,15 @@ export class ShortUrlsRepository implements IShortUrlRepository {
   }
 
   async update(payload: ShortUrl) {
+    // Noop
+    return payload
+  }
+
+  async updateVisitsCounter(id: number) {
     return this.db.shortUrl.update({
-      where: { id: payload.id },
+      where: { id },
       data: {
-        slug: payload.slug,
-        url: payload.url,
-        userId: payload.userId,
+        visits: { increment: 1 },
       },
     })
   }
