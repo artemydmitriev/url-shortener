@@ -1,0 +1,38 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Artemy Dmitriev",
+  "packageManager": "pnpm@10.8.0",
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "tsx --no-cache --tsconfig tsconfig.json --watch --env-file=.env src/index.ts",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "ci:db": "pnpm run db:deploy",
+    "postinstall": "pnpm db:generate"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.0.1",
+    "@fastify/session": "^11.1.0",
+    "@prisma/client": "6.4.0",
+    "awilix": "^12.0.5",
+    "fastify": "^5.2.2",
+    "pino": "^9.6.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "pino-pretty": "^13",
+    "prisma": "catalog:prisma",
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int        @id @default(autoincrement())
+  email    String     @unique
+  shortUrl ShortUrl[]
+
+  @@index([email])
+}
+
+model ShortUrl {
+  id        Int      @id @default(autoincrement())
+  url       String
+  slug      String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, url, slug])
+}

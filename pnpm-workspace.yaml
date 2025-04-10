@@ -1,0 +1,14 @@
+packages:
+  - packages/*
+
+catalogs:
+  prisma:
+    prisma: latest
+
+onlyBuiltDependencies:
+  - '@heroui/shared-utils'
+  - '@prisma/client'
+  - '@prisma/engines'
+  - esbuild
+  - prisma
+  - sharp
