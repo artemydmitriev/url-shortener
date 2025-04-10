@@ -18,11 +18,6 @@ import { User } from '../domain/entity/User.js'
 import { AuthRouter } from './web/Auth/AuthRouter.js'
 import { RateLimiterMemory } from 'rate-limiter-flexible'
 
-const rateLimiter = new RateLimiterMemory({
-  points: 5,
-  duration: 10,
-})
-
 declare module 'fastify' {
   interface FastifyRequest {
     user: User | null
@@ -37,6 +32,11 @@ declare module 'fastify' {
     }
   }
 }
+
+const rateLimiter = new RateLimiterMemory({
+  points: 5,
+  duration: 10,
+})
 
 const envToLogger = {
   development: {
@@ -69,12 +69,11 @@ export class FastifyServer {
     this.fastify.register(fastifySession, {
       secret: this.config.SESSION_SECRET,
       cookieName: 'sid',
-      cookie: { maxAge: 1800000, secure: false },
+      cookie: { sameSite: 'lax', maxAge: 1800000, secure: false },
     })
 
     this.fastify.register(cors, {
-      origin: 'http://localhost:3000',
-      // lax type
+      origin: this.config.CORS_ORIGIN,
       credentials: true,
       methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     })

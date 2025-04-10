@@ -6,6 +6,7 @@ export class AuthenticationUseCase {
 
   async authenticate(email: string): Promise<User> {
     const existingUser = await this.userRepository.findByEmail(email)
+
     if (existingUser) {
       return existingUser
     }

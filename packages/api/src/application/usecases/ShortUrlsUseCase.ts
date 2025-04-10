@@ -1,89 +1,54 @@
 import { ShortUrl } from '../../domain/entity/ShortUrl.js'
 import { User } from '../../domain/entity/User.js'
 import { IShortUrlRepository } from '../../domain/repository/IShortUrlRepository.js'
-import crypto from 'node:crypto'
+import { customAlphabet } from 'nanoid'
+import { ShortUrlsUseCaseError } from '../errors/ShortUrlsUseCaseError.js'
 
-const base62Chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
-function toBase62(buffer: Buffer): string {
-  const num = BigInt('0x' + buffer.toString('hex'))
-  let result = ''
-  let temp = num
-  while (temp > 0) {
-    result = base62Chars[Number(temp % 62n)] + result
-    temp = temp / 62n
-  }
-  return result
-}
-
-function generateSlugFromUrl(url: string, length = 8): string {
-  const hash = crypto.createHash('sha256').update(url).digest()
-  const base62 = toBase62(hash)
-  return base62.slice(0, length)
-}
-
-// export class SlugGenerator {
-//   constructor(private readonly peekBySlug: (slug: string) => Promise<boolean>) {}
-
-//   async generateUniqueSlug(): Promise<string> {
-//     let slug: string
-//     let attempts = 0
-//     const maxAttempts = 5
-
-//     do {
-//       slug = Date.now().toString(36)
-//       const exists = await this.peekBySlug(slug)
-//       if (!exists) return slug
-
-//       attempts++
-//     } while (attempts < maxAttempts)
-
-//     throw new Error('Failed to generate unique slug')
-//   }
-// }
+const nanoid = customAlphabet(
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+  6,
+)
 
 export class ShortUrlsUseCase {
   constructor(private shortUrlsRepository: IShortUrlRepository) {}
 
-  public async createShortUrl(user: User, url: string): Promise<ShortUrl> {
-    const slug = await this.generateUniqueSlug(url)
-    const shortUrl = new ShortUrl({ url, userId: user.id, slug })
-    return this.shortUrlsRepository.create(shortUrl)
+  async createShortUrl(user: User, url: string): Promise<ShortUrl> {
+    const slug = await this.generateUniqueSlug()
+    return this.shortUrlsRepository.create(new ShortUrl({ url, userId: user.id, slug }))
   }
 
-  private async generateUniqueSlug(url: string): Promise<string> {
-    let slug: string
-    let attempts = 0
+  private async generateUniqueSlug(): Promise<string> {
     const maxAttempts = 5
 
-    do {
-      slug = generateSlugFromUrl(url)
+    for (let i = 0; i < maxAttempts; i++) {
+      const slug = nanoid()
       const exists = await this.shortUrlsRepository.peekBySlug(slug)
-      if (!exists) return slug
 
-      attempts++
-    } while (attempts < maxAttempts)
+      if (!exists) {
+        return slug
+      }
+    }
 
-    throw new Error('Failed to generate unique slug')
+    throw new ShortUrlsUseCaseError('Failed to generate unique slug')
   }
 
-  public async getUrlBySlug(slug: string): Promise<ShortUrl | null> {
+  async getUrlBySlug(slug: string): Promise<ShortUrl | null> {
     return this.shortUrlsRepository.findBySlug(slug)
   }
 
-  public async updateSlugInShortUrl(user: User, payload: ShortUrl): Promise<ShortUrl> {
+  async updateSlugInShortUrl(user: User, payload: ShortUrl): Promise<ShortUrl> {
     return this.shortUrlsRepository.update(payload)
   }
 
-  public async updateSlugVisitsCounter(slugId: number): Promise<ShortUrl> {
+  async updateSlugVisitsCounter(slugId: number): Promise<ShortUrl> {
     return this.shortUrlsRepository.updateVisitsCounter(slugId)
   }
 
-  public async listShortUrlsByUser(user: User): Promise<ShortUrl[]> {
+  async listShortUrlsByUser(user: User): Promise<ShortUrl[]> {
     return this.shortUrlsRepository.findAllByUserId(user.id)
   }
 
-  public async listShortUrls(user: User): Promise<ShortUrl[]> {
+  async listShortUrls(user: User): Promise<ShortUrl[]> {
     return this.listShortUrlsByUser(user)
   }
 }

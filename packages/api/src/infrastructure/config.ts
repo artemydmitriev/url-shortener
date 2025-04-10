@@ -15,6 +15,7 @@ const ConfigSchema = z
     ADDRESS: z.string().optional().default('localhost:3001'),
     DATABASE_URL: z.string().nonempty(),
     LOG_LEVEL: LogLevelSchema,
+    CORS_ORIGIN: z.string().optional().default('http://localhost:3000'),
     SESSION_SECRET: z.string().min(32).default(crypto.randomBytes(32).toString('hex')), // shortcut for dev
   })
   .transform((data) => ({
