@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Link } from '@heroui/link'
 import { useAuth } from '@/hooks/useLogin'
 
 export default function Footer() {

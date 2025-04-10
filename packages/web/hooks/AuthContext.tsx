@@ -1,5 +1,7 @@
 'use client'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+
+import React, { createContext, useEffect, useState } from 'react'
+import { backendUrl } from '@/utils/backendUrl'
 
 type User = {
   id: string
@@ -20,7 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('http://localhost:3001/auth/me', {
+    fetch(`${backendUrl}/auth/me`, {
       credentials: 'include',
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -31,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [])
 
   const login = async (email: string) => {
-    const res = await fetch('http://localhost:3001/auth/login', {
+    const res = await fetch(`${backendUrl}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -45,10 +47,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   const logout = async () => {
-    await fetch('http://localhost:3000/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    })
     setUser(null)
   }
 

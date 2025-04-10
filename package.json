@@ -9,7 +9,8 @@
   },
   "scripts": {
     "api:dev": "pnpm --filter api dev",
-    "web:dev": "pnpm --filter web dev"
+    "web:dev": "pnpm --filter web dev",
+    "db:deploy": "pnpm --filter api db:deploy"
   },
   "keywords": [],
   "author": "",

@@ -34,7 +34,7 @@ declare module 'fastify' {
 }
 
 const rateLimiter = new RateLimiterMemory({
-  points: 5,
+  points: 10,
   duration: 10,
 })
 

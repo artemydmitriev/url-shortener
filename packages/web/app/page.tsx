@@ -7,8 +7,9 @@ import { useState, useMemo } from 'react'
 import Footer from '@/components/footer'
 import { useAuth } from '@/hooks/useLogin'
 import { Login } from '@/components/login'
+import { backendUrl } from '@/utils/backendUrl'
 
-export function UrlAliasCreator() {
+function UrlAliasCreator() {
   const [url, setUrl] = useState('')
   const [alias, setAlias] = useState('')
   const [loading, setLoading] = useState(false)
@@ -24,7 +25,7 @@ export function UrlAliasCreator() {
     setError('')
 
     try {
-      const res = await fetch('http://localhost:3001/urls/', {
+      const res = await fetch(`${backendUrl}/urls`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

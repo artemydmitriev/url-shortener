@@ -3,12 +3,7 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
-
-catalogs:
-  prisma:
-    prisma:
-      specifier: latest
-      version: 6.6.0
+  injectWorkspacePackages: true
 
 importers:
 
@@ -62,6 +57,9 @@ importers:
       pino:
         specifier: ^9.6.0
         version: 9.6.0
+      prisma:
+        specifier: ^6.6.0
+        version: 6.6.0(typescript@5.8.3)
       rate-limiter-flexible:
         specifier: ^7.0.0
         version: 7.0.0
@@ -75,9 +73,6 @@ importers:
       pino-pretty:
         specifier: ^13
         version: 13.0.0
-      prisma:
-        specifier: catalog:prisma
-        version: 6.6.0(typescript@5.8.3)
       tsx:
         specifier: ^4
         version: 4.19.3

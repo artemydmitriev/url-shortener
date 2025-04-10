@@ -10,13 +10,14 @@
     "node": ">=22"
   },
   "scripts": {
+    "build": "pnpm db:generate && tsc --build .",
+    "start": "pnpm run db:deploy && node dist/index.js",
     "dev": "tsx --no-cache --tsconfig tsconfig.json --watch --env-file=.env src/index.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "ci:db": "pnpm run db:deploy",
-    "postinstall": "pnpm db:generate"
+    "ci:db": "pnpm run db:deploy"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
@@ -27,14 +28,19 @@
     "fastify": "^5.2.2",
     "nanoid": "^5.1.5",
     "pino": "^9.6.0",
+    "prisma": "^6.6.0",
     "rate-limiter-flexible": "^7.0.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/node": "^22",
     "pino-pretty": "^13",
-    "prisma": "catalog:prisma",
     "tsx": "^4",
     "typescript": "^5"
-  }
+  },
+  "files": [
+    "dist",
+    "prisma",
+    "package.json"
+  ]
 }

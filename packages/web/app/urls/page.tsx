@@ -14,6 +14,7 @@ import {
 } from '@heroui/table'
 import { useAsyncList } from '@react-stately/data'
 import { Spinner } from '@heroui/react'
+import { backendUrl } from '@/utils/backendUrl'
 
 const columns = [
   {
@@ -33,17 +34,23 @@ const columns = [
 export default function URLsPage() {
   const [loading, setLoading] = useState(true)
 
-  let list = useAsyncList({
+  const list = useAsyncList<{
+    id: number
+    slug: string
+    url: string
+    visits: number
+    [key: string]: string | number
+  }>({
     async load({ signal }) {
       try {
-        let res = await fetch('http://localhost:3001/urls/', {
+        const res = await fetch(`${backendUrl}/urls`, {
           credentials: 'include',
           signal,
         })
 
         if (!res.ok) throw new Error('Failed to fetch URLs')
 
-        let json = await res.json()
+        const json = await res.json()
 
         if (!Array.isArray(json)) {
           console.warn('Expected array, got:', json)
@@ -61,8 +68,8 @@ export default function URLsPage() {
     async sort({ items, sortDescriptor }) {
       return {
         items: items.sort((a, b) => {
-          let first = a[sortDescriptor.column]
-          let second = b[sortDescriptor.column]
+          const first = a[sortDescriptor.column] as string
+          const second = b[sortDescriptor.column] as string
           let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1
 
           if (sortDescriptor.direction === 'descending') {
