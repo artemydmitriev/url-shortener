@@ -6,11 +6,22 @@ import { Server, IncomingMessage, ServerResponse } from 'http'
 import { Config } from './config.js'
 import { ShortUrlsRoute } from './web/ShortUrls/ShortUrlsRouter.js'
 import { UrlAliasesRouter } from './web/UrlAliases/UrlAliasesRouter.js'
-import { HttpError, InternalServerError, ValidationError } from './errors/HttpError.js'
+import {
+  HttpError,
+  InternalServerError,
+  TooManyRequestsError,
+  ValidationError,
+} from './errors/HttpError.js'
 import { ApplicationError } from '../application/errors/ApplicationError.js'
 import { z } from 'zod'
 import { User } from '../domain/entity/User.js'
 import { AuthRouter } from './web/Auth/AuthRouter.js'
+import { RateLimiterMemory } from 'rate-limiter-flexible'
+
+const rateLimiter = new RateLimiterMemory({
+  points: 5,
+  duration: 10,
+})
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -71,7 +82,7 @@ export class FastifyServer {
     this.fastify.setErrorHandler(function (error, request, reply) {
       if (error instanceof HttpError) {
         this.log.warn(error)
-        reply.send({ error: error.message })
+        reply.send(error)
       } else if (error instanceof z.ZodError) {
         this.log.warn(error)
         reply.send(new ValidationError())
@@ -81,6 +92,14 @@ export class FastifyServer {
       } else {
         this.log.error(error)
         reply.send(error)
+      }
+    })
+
+    this.fastify.addHook('onRequest', async (req, reply) => {
+      try {
+        await rateLimiter.consume(req.ip)
+      } catch {
+        reply.send(new TooManyRequestsError())
       }
     })
 

@@ -2,16 +2,14 @@
   "name": "url-shortener",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "index.js",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "build": "pnpm --filter database db:deploy && pnpm --filter database db:generate && pnpm --filter web build",
-    "start": "pnpm --filter web start",
-    "server:dev": "pnpm --filter fastify-typescript dev",
-    "dev": "pnpm --filter database db:generate && pnpm --filter web dev",
-    "studio": "pnpm --filter database db:studio"
+    "api:dev": "pnpm --filter api dev",
+    "web:dev": "pnpm --filter web dev"
   },
   "keywords": [],
   "author": "",
