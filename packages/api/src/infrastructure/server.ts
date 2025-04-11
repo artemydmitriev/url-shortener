@@ -12,7 +12,6 @@ import {
   TooManyRequestsError,
   ValidationError,
 } from './errors/HttpError.js'
-import { ApplicationError } from '../application/errors/ApplicationError.js'
 import { z } from 'zod'
 import { User } from '../domain/entity/User.js'
 import { AuthRouter } from './web/Auth/AuthRouter.js'
@@ -78,20 +77,19 @@ export class FastifyServer {
       methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     })
 
-    this.fastify.setErrorHandler(function (error, request, reply) {
+    this.fastify.setErrorHandler(async (error) => {
       if (error instanceof HttpError) {
-        this.log.warn(error)
-        reply.send(error)
-      } else if (error instanceof z.ZodError) {
-        this.log.warn(error)
-        reply.send(new ValidationError())
-      } else if (error instanceof ApplicationError) {
-        this.log.error(error)
-        reply.send(new InternalServerError())
-      } else {
-        this.log.error(error)
-        reply.send(error)
+        this.fastify.log.warn(error)
+        return error
       }
+
+      if (error instanceof z.ZodError) {
+        this.fastify.log.warn(error)
+        return new ValidationError()
+      }
+
+      this.fastify.log.error(error)
+      return new InternalServerError()
     })
 
     this.fastify.addHook('onRequest', async (req, reply) => {
@@ -117,11 +115,11 @@ export class FastifyServer {
     })
     this.fastify.register(this.urlAliasesRouter.register)
 
+    // Health check
     this.fastify.get('/health', async () => ({ status: 'ok' }))
   }
 
   async start() {
-    await this.init()
-    return await this.fastify.listen({ host: this.config.HOST, port: this.config.PORT })
+    return this.fastify.listen({ host: this.config.HOST, port: this.config.PORT })
   }
 }

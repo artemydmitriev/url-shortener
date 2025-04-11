@@ -2,7 +2,7 @@ import { ShortUrl } from '../../domain/entity/ShortUrl.js'
 import { User } from '../../domain/entity/User.js'
 import { IShortUrlRepository } from '../../domain/repository/IShortUrlRepository.js'
 import { customAlphabet } from 'nanoid'
-import { ShortUrlsUseCaseError } from '../errors/ShortUrlsUseCaseError.js'
+import { ApplicationUseCaseError } from '../errors/ApplicationUseCaseError.js'
 
 const nanoid = customAlphabet(
   '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -29,7 +29,7 @@ export class ShortUrlsUseCase {
       }
     }
 
-    throw new ShortUrlsUseCaseError('Failed to generate unique slug')
+    throw new ApplicationUseCaseError('Failed to generate unique slug')
   }
 
   async getUrlBySlug(slug: string): Promise<ShortUrl | null> {
